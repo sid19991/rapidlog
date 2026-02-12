@@ -47,25 +47,19 @@ GitHub Actions should be enabled by default. Verify at:
 https://github.com/sid19991/fastlog/actions
 ```
 
-### 2. Setup PyPI Publishing (when ready to publish)
+### 2. Setup PyPI Publishing ✅ COMPLETED
 
-1. **Create PyPI account** at [pypi.org](https://pypi.org/account/register/)
+1. ✅ **PyPI account created** at [pypi.org](https://pypi.org/account/register/)
 
-2. **Create API token**
-   - Go to: https://pypi.org/manage/account/token/
-   - Click "Add API token"
-   - Name: `fastlog-github-actions`
-   - Scope: "Entire account" (or specific to fastlog later)
-   - Copy the token (starts with `pypi-`)
+2. ✅ **API token created**
 
-3. **Add token to GitHub Secrets**
-   - Go to: https://github.com/sid19991/fastlog/settings/secrets/actions
-   - Click "New repository secret"
-   - Name: `PYPI_TOKEN`
-   - Value: (paste PyPI token)
-   - Click "Add secret"
+3. ✅ **Token added to GitHub Secrets** as `PYPI_TOKEN`
 
-4. **Optional: Test PyPI**
+4. ⚠️ **Package name conflict**: `fastlog` is already taken on PyPI
+   - See [PACKAGE_NAMING.md](PACKAGE_NAMING.md) for alternate name suggestions
+   - Update `pyproject.toml` with chosen name before publishing
+
+5. **Optional: Test PyPI**
    - Create account at [test.pypi.org](https://test.pypi.org/account/register/)
    - Create API token
    - Add as `TEST_PYPI_TOKEN` secret

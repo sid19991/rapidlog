@@ -3,7 +3,7 @@ requires = ["setuptools>=61.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "fastlog"
+name = "rapidlog"
 version = "1.0.0"
 description = "High-performance JSON logging for Python with zero dependencies"
 readme = "README.md"
