@@ -1,0 +1,71 @@
+name: Benchmarks
+
+on:
+  schedule:
+    # Run every Monday at 00:00 UTC
+    - cron: '0 0 * * 1'
+  workflow_dispatch:  # Allow manual trigger
+  push:
+    branches: [ main ]
+    paths:
+      - 'fastlog.py'
+      - 'benchmark_enhanced.py'
+
+jobs:
+  benchmark:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python 3.13
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.13'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install structlog loguru python-json-logger
+        # Skip fastlogging on CI due to potential C extension issues
+        # pip install fastlogging
+
+    - name: Run benchmarks
+      run: |
+        python benchmark_enhanced.py > benchmark_results.txt 2>&1
+        cat benchmark_results.txt
+
+    - name: Upload benchmark results
+      uses: actions/upload-artifact@v4
+      with:
+        name: benchmark-results-${{ github.sha }}
+        path: |
+          benchmark_results.txt
+          benchmark_logs/*.jsonl
+        retention-days: 90
+
+    - name: Parse and comment results (on main branch)
+      if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+      run: |
+        echo "## Benchmark Results" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo '```' >> $GITHUB_STEP_SUMMARY
+        head -50 benchmark_results.txt >> $GITHUB_STEP_SUMMARY
+        echo '```' >> $GITHUB_STEP_SUMMARY
+
+    - name: Historical benchmark tracking
+      if: github.ref == 'refs/heads/main'
+      run: |
+        # Extract key metrics for tracking
+        mkdir -p benchmark_history
+        echo "$(date -u +%Y-%m-%d-%H:%M:%S),$(git rev-parse --short HEAD)" > benchmark_history/latest.csv
+        grep "fastlog.*logs/s" benchmark_results.txt >> benchmark_history/latest.csv || true
+
+    - name: Commit benchmark history
+      if: github.ref == 'refs/heads/main'
+      run: |
+        git config --local user.email "github-actions[bot]@users.noreply.github.com"
+        git config --local user.name "github-actions[bot]"
+        git add benchmark_history/ || true
+        git commit -m "chore: update benchmark history [skip ci]" || true
+        git push || true
