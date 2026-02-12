@@ -1,0 +1,69 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "fastlog"
+version = "1.0.0"
+description = "High-performance JSON logging for Python with zero dependencies"
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "MIT"}
+authors = [
+    {name = "fastlog contributors"}
+]
+keywords = ["logging", "json", "performance", "structured-logging", "async"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: System :: Logging",
+    "Typing :: Typed",
+]
+
+[project.urls]
+Homepage = "https://github.com/yourusername/fastlog"
+Repository = "https://github.com/yourusername/fastlog"
+Issues = "https://github.com/yourusername/fastlog/issues"
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0",
+    "pytest-cov>=4.0",
+]
+benchmark = [
+    "structlog>=23.0",
+    "loguru>=0.7",
+    "python-json-logger>=2.0",
+    "fastlogging>=1.0",
+]
+
+[tool.setuptools]
+py-modules = ["fastlog"]
+
+[tool.pytest.ini_options]
+testpaths = ["test_fastlog.py"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = "-v --tb=short"
+
+[tool.coverage.run]
+source = ["fastlog"]
+omit = ["test_*", "benchmark_*", "demo_*", "compare_*", "verify_*"]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+]
