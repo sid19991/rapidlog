@@ -1,1 +1,7 @@
 benchmark_logs
+
+# Internal/Strategic documentation (local development only)
+LAUNCH_SUMMARY.md
+ADOPTION_STRATEGY.md
+CICD_SETUP.md
+PACKAGE_NAMING.md
