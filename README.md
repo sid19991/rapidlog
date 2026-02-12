@@ -1,4 +1,4 @@
-# fastlog 🚀
+# rapidlog 🚀
 
 **High-performance JSON logging for Python** — Pure Python, zero dependencies, designed for speed.
 
@@ -6,79 +6,90 @@
 [![Benchmarks](https://github.com/sid19991/fastlog/actions/workflows/benchmark.yml/badge.svg)](https://github.com/sid19991/fastlog/actions/workflows/benchmark.yml)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![PyPI](https://img.shields.io/pypi/v/fastlog.svg)](https://pypi.org/project/fastlog/)
+[![PyPI](https://img.shields.io/pypi/v/rapidlog.svg)](https://pypi.org/project/rapidlog/)
 
 ---
 
-## Why fastlog?
+## The Problem
 
-When you need **structured JSON logging** with maximum throughput:
+Python's `logging` module has **lock contention under multi-threaded load**. When your application logs from multiple threads, they compete for a shared lock, killing throughput:
 
 ```python
+# stdlib logging: 6,487 logs/sec with 4 threads
+import logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+# Bottleneck: all threads compete for the lock
+logger.info("msg", extra={"user_id": 123})
+```
+
+**Result:** Logging becomes a bottleneck in multi-threaded applications.
+
+---
+
+## The Solution: rapidlog
+
+**3.1x faster** structured JSON logging with a clean API and zero dependencies.
+
+```python
+# rapidlog: 20,133 logs/sec with 4 threads (3.1x faster)
 from fastlog import get_logger
 
 logger = get_logger()
 logger.info("user login", user_id=123, ip="192.168.1.1")
-# {"ts_ns": 1739328000000000000, "level": "INFO", "msg": "user login", "user_id": 123, "ip": "192.168.1.1", "thread": 12345}
 ```
 
-### Key Features
+**That's 13.6K extra logs per second your application can handle.**
 
-✨ **2-3x faster** than standard library JSON logging  
+---
+
+## Installation
+
+```bash
+pip install rapidlog
+```
+
+---
+
+## Quick Comparison: stdlib vs rapidlog
+
+### Before (stdlib logging)
+```python
+import logging
+from pythonjsonlogger import jsonlogger
+
+handler = logging.StreamHandler()
+formatter = jsonlogger.JsonFormatter()
+handler.setFormatter(formatter)
+
+logger = logging.getLogger()
+logger.addHandler(handler)
+
+# Extra kwargs are awkward
+logger.info("user action", extra={"user_id": 123, "action": "login"})
+```
+
+### After (rapidlog)
+```python
+from fastlog import get_logger
+
+logger = get_logger()
+logger.info("user action", user_id=123, action="login")
+```
+
+**That's it. Cleaner API, 3x faster, zero dependencies.**
+
+---
+
+## Key Features
+
+✨ **3.1x faster** than stdlib logging under multi-threaded load  
 ⚡ **Zero lock contention** on the hot path (per-thread buffers)  
 🔧 **Configuration presets** for memory vs throughput trade-offs  
 🧵 **Thread-safe** multi-producer, single-consumer design  
 📦 **Zero dependencies** — pure Python stdlib only  
 🛡️ **Battle-tested** — 37 comprehensive tests covering edge cases
-
----
-
-## Performance
-
-Benchmark results from comprehensive comparison (Python 3.13, Windows):
-
-### Single-Threaded Performance (1 thread, 100K logs)
-
-| Library | Throughput | vs stdlib-json | Peak Memory |
-|---------|-----------|----------------|-------------|
-| **fastlog** | **21,922 logs/s** | **2.35x faster** | 23.9 MiB |
-| fastlogging | 26,527 logs/s | 2.85x faster | 0.02 MiB |
-| structlog-json | 13,763 logs/s | 1.48x faster | 0.02 MiB |
-| stdlib-batching | 11,955 logs/s | 1.28x faster | 0.04 MiB |
-| **stdlib-json** | 9,317 logs/s | **baseline** | 0.01 MiB |
-| python-json-logger | 8,344 logs/s | 0.90x | 0.01 MiB |
-| loguru | 3,737 logs/s | 0.40x | 0.03 MiB |
-
-### Multi-Threaded Performance (4 threads, 100K logs each = 400K total)
-
-| Library | Throughput | vs stdlib-json | Peak Memory |
-|---------|-----------|----------------|-------------|
-| fastlogging | 24,374 logs/s | 3.76x faster | 0.06 MiB |
-| **fastlog** | **20,133 logs/s** | **3.10x faster** | 23.9 MiB |
-| structlog-json | 12,101 logs/s | 1.86x faster | 0.02 MiB |
-| stdlib-batching | 6,453 logs/s | 0.99x | 0.05 MiB |
-| python-json-logger | 6,527 logs/s | 1.01x | 0.02 MiB |
-| **stdlib-json** | 6,487 logs/s | **baseline** | 0.02 MiB |
-| loguru | 3,248 logs/s | 0.50x | 0.04 MiB |
-
-### High-Contention Performance (8 threads, 50K logs each = 400K total)
-
-| Library | Throughput | vs stdlib-json | Peak Memory |
-|---------|-----------|----------------|-------------|
-| fastlogging | 25,674 logs/s | 3.99x faster | 0.10 MiB |
-| **fastlog** | **19,685 logs/s** | **3.06x faster** | 24.0 MiB |
-| structlog-json | 10,152 logs/s | 1.58x faster | 0.04 MiB |
-| stdlib-batching | 7,231 logs/s | 1.12x faster | 0.07 MiB |
-| **stdlib-json** | 6,441 logs/s | **baseline** | 0.04 MiB |
-| python-json-logger | 6,079 logs/s | 0.94x | 0.04 MiB |
-| loguru | 3,030 logs/s | 0.47x | 0.09 MiB |
-
-### Key Takeaways
-
-1. **fastlog excels in multi-threaded scenarios** — 3.1x faster than stdlib-json with 4+ threads
-2. **fastlogging is fastest** but lacks structured logging API (manual JSON encoding required)
-3. **Memory trade-off is intentional** — fastlog uses ~24 MiB for pre-allocated buffers to eliminate lock contention
-4. **Throughput scales linearly** with threads due to per-thread buffer architecture
 
 ---
 
@@ -101,7 +112,56 @@ logger.error("database timeout", query="SELECT * FROM users", timeout_ms=5000)
 logger.close()
 ```
 
-### Configuration Presets
+---
+
+## Migrating from stdlib logging
+
+### Step 1: Replace imports
+```python
+# Before
+import logging
+logger = logging.getLogger(__name__)
+
+# After
+from fastlog import get_logger
+logger = get_logger()
+```
+
+### Step 2: Update logging calls
+```python
+# Before: Awkward extra= syntax
+logger.info("user login", extra={"user_id": 123, "ip": "192.168.1.1"})
+
+# After: Clean keyword arguments
+logger.info("user login", user_id=123, ip="192.168.1.1")
+```
+
+### Step 3: Remove JSON formatter setup
+```python
+# Before: Complex setup
+import logging
+from pythonjsonlogger import jsonlogger
+
+handler = logging.StreamHandler()
+formatter = jsonlogger.JsonFormatter()
+handler.setFormatter(formatter)
+logger = logging.getLogger()
+logger.addHandler(handler)
+
+# After: One line
+from fastlog import get_logger
+logger = get_logger()
+```
+
+### That's it!
+- Logs are now JSON by default
+- You get 3x the throughput
+- Zero dependencies
+- Same thread-safe behavior
+
+---
+
+## Configuration Presets
 
 Choose a preset based on your application's constraints:
 
@@ -135,6 +195,59 @@ logger = get_logger(
     flush_interval=0.02      # Seconds between auto-flushes
 )
 ```
+
+---
+
+## Performance Benchmarks
+
+Detailed benchmark results from comprehensive comparison (Python 3.13, Windows):
+
+### Single-Threaded Performance (1 thread, 100K logs)
+
+| Library | Throughput | vs stdlib-json | Peak Memory |
+|---------|-----------|----------------|-------------|
+| **rapidlog** | **21,922 logs/s** | **2.35x faster** | 23.9 MiB |
+| fastlogging | 26,527 logs/s | 2.85x faster | 0.02 MiB |
+| structlog-json | 13,763 logs/s | 1.48x faster | 0.02 MiB |
+| stdlib-batching | 11,955 logs/s | 1.28x faster | 0.04 MiB |
+| **stdlib-json** | 9,317 logs/s | **baseline** | 0.01 MiB |
+| python-json-logger | 8,344 logs/s | 0.90x | 0.01 MiB |
+| loguru | 3,737 logs/s | 0.40x | 0.03 MiB |
+
+### Multi-Threaded Performance (4 threads, 100K logs each = 400K total)
+
+| Library | Throughput | vs stdlib-json | Peak Memory |
+|---------|-----------|----------------|-------------|
+| fastlogging | 24,374 logs/s | 3.76x faster | 0.06 MiB |
+| **rapidlog** | **20,133 logs/s** | **3.10x faster** | 23.9 MiB |
+| structlog-json | 12,101 logs/s | 1.86x faster | 0.02 MiB |
+| stdlib-batching | 6,453 logs/s | 0.99x | 0.05 MiB |
+| python-json-logger | 6,527 logs/s | 1.01x | 0.02 MiB |
+| **stdlib-json** | 6,487 logs/s | **baseline** | 0.02 MiB |
+| loguru | 3,248 logs/s | 0.50x | 0.04 MiB |
+
+### High-Contention Performance (8 threads, 50K logs each = 400K total)
+
+| Library | Throughput | vs stdlib-json | Peak Memory |
+|---------|-----------|----------------|-------------|
+| fastlogging | 25,674 logs/s | 3.99x faster | 0.10 MiB |
+| **rapidlog** | **19,685 logs/s** | **3.06x faster** | 24.0 MiB |
+| structlog-json | 10,152 logs/s | 1.58x faster | 0.04 MiB |
+| stdlib-batching | 7,231 logs/s | 1.12x faster | 0.07 MiB |
+| **stdlib-json** | 6,441 logs/s | **baseline** | 0.04 MiB |
+| python-json-logger | 6,079 logs/s | 0.94x | 0.04 MiB |
+| loguru | 3,030 logs/s | 0.47x | 0.09 MiB |
+
+### Key Takeaways
+
+1. **rapidlog excels in multi-threaded scenarios** — 3.1x faster than stdlib-json with 4+ threads
+2. **fastlogging is fastest** but lacks structured logging API (manual JSON encoding required)
+3. **Memory trade-off is intentional** — rapidlog uses ~24 MiB for pre-allocated buffers to eliminate lock contention
+4. **Throughput scales linearly** with threads due to per-thread buffer architecture
+
+---
+
+## Design & Architecture
 
 ### Design goals
 
