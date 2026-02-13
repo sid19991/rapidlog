@@ -365,7 +365,7 @@ def benchmark_structlog_json(threads: int, logs_per_thread: int) -> Result | Non
 
 
 def benchmark_loguru(threads: int, logs_per_thread: int) -> Result | None:
-    """Benchmark loguru with file output."""
+    """Benchmark loguru with minimal JSON output (comparable to rapidlog)."""
     try:
         from loguru import logger as loguru_logger
     except ImportError:
@@ -374,24 +374,38 @@ def benchmark_loguru(threads: int, logs_per_thread: int) -> Result | None:
     out_file = BENCHMARK_DIR / f"loguru-{threads}x{logs_per_thread}.jsonl"
     _fresh_file(out_file)
     
-    # Remove default handler and add JSON file handler
+    # Custom sink for minimal JSON output (similar to rapidlog)
+    file_handle = out_file.open("w", encoding="utf-8", buffering=1)
+    
+    def minimal_json_handler(message):
+        """Custom handler that outputs minimal JSON comparable to rapidlog."""
+        record = message.record
+        payload = {
+            "ts_ns": int(record["time"].timestamp() * 1_000_000_000),
+            "level": record["level"].name,
+            "msg": record["message"],
+            "thread": record["thread"].id,
+            **record["extra"]
+        }
+        file_handle.write(json.dumps(payload, separators=(",", ":")) + "\n")
+    
+    # Remove default handler and add custom minimal JSON handler
     loguru_logger.remove()
-    loguru_logger.add(
-        str(out_file),
-        format="{message}",
-        serialize=True,  # JSON serialization
-    )
+    loguru_logger.add(minimal_json_handler)
 
     def worker(tid: int) -> None:
         for i in range(logs_per_thread):
-            loguru_logger.info("hello", user_id=tid, i=i)
+            loguru_logger.bind(user_id=tid, i=i).info("hello")
 
     tracemalloc.start()
     start = time.perf_counter()
     _run_threads(threads, worker)
+    file_handle.flush()
     elapsed = time.perf_counter() - start
     _, peak = tracemalloc.get_traced_memory()
     tracemalloc.stop()
+
+    file_handle.close()
 
     total = threads * logs_per_thread
     bytes_written = out_file.stat().st_size
@@ -409,7 +423,13 @@ def benchmark_loguru(threads: int, logs_per_thread: int) -> Result | None:
 
 
 def benchmark_fastlogging(threads: int, logs_per_thread: int) -> Result | None:
-    """Benchmark fastlogging library with file output."""
+    """Benchmark fastlogging library with file output.
+    
+    NOTE: fastlogging does NOT output structured JSON. It outputs text format:
+    "2026-02-13 10:15:30.123 INFO: {\"msg\": \"hello\", ...}"
+    Manual JSON encoding is required, and output is NOT parseable as pure JSON.
+    Not directly comparable as a structured logging solution.
+    """
     try:
         import fastlogging
     except ImportError:
@@ -430,7 +450,7 @@ def benchmark_fastlogging(threads: int, logs_per_thread: int) -> Result | None:
     def worker(tid: int) -> None:
         for i in range(logs_per_thread):
             # fastlogging doesn't have native structured logging,
-            # so we format as JSON manually
+            # so we format as JSON manually (still outputs text format, not pure JSON)
             import json
             msg = json.dumps({"msg": "hello", "user_id": tid, "i": i})
             logger.info(msg)
@@ -510,6 +530,13 @@ def print_table(results: list[Result], notes: list[str]) -> None:
         print("\nnotes:")
         for note in notes:
             print(f"- {note}")
+    
+    # Add benchmark fairness notes
+    print("\nOutput Format Information:")
+    print("- rapidlog, stdlib-json, structlog, python-json-logger, loguru: Minimal JSON (~100 bytes/log)")
+    print("- fastlogging: NOT structured JSON (text format with embedded JSON string)")
+    print("\nAll libraries output comparable JSON formats (except fastlogging)")
+    print("Note: bytes_written column shows actual output size for verification")
 
 
 if __name__ == "__main__":

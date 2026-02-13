@@ -245,6 +245,22 @@ Detailed benchmark results from comprehensive comparison (Python 3.13, Windows):
 3. **Memory trade-off is intentional** — rapidlog uses ~24 MiB for pre-allocated buffers to eliminate lock contention
 4. **Throughput scales linearly** with threads due to per-thread buffer architecture
 
+### Benchmark Notes
+
+**Output format considerations:**
+
+- **rapidlog, stdlib-json, structlog, python-json-logger, loguru**: All output minimal structured JSON (~100 bytes per log)
+  ```json
+  {"ts_ns": 1739462130123456789, "level": "INFO", "msg": "hello", "user_id": 1, "i": 0, "thread": 12345}
+  ```
+
+- **fastlogging**: Does NOT output structured JSON
+  - Outputs text format: `2026-02-13 10:15:30.123 INFO: {"msg": "hello", ...}`
+  - Requires manual JSON encoding in application code
+  - Not comparable as a structured logging solution
+
+**All benchmarks use comparable output formats** except fastlogging, ensuring fair throughput comparisons.
+
 ---
 
 ## Design & Architecture
