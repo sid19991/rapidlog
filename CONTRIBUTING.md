@@ -20,8 +20,8 @@ python -m venv .venv
 # Activate (Windows)
 .venv\Scripts\activate
 
-# Install dependencies
-pip install -e ".[dev]"
+# Install dependencies from requirements.txt
+pip install -r requirements.txt
 ```
 
 ### 3. Make Your Changes

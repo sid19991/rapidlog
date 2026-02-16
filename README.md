@@ -34,7 +34,7 @@ logger.info("msg", extra={"user_id": 123})
 
 ```python
 # rapidlog: 20,133 logs/sec with 4 threads (3.1x faster)
-from fastlog import get_logger
+from rapidlog import get_logger
 
 logger = get_logger()
 logger.info("user login", user_id=123, ip="192.168.1.1")
@@ -72,7 +72,7 @@ logger.info("user action", extra={"user_id": 123, "action": "login"})
 
 ### After (rapidlog)
 ```python
-from fastlog import get_logger
+from rapidlog import get_logger
 
 logger = get_logger()
 logger.info("user action", user_id=123, action="login")
@@ -98,7 +98,7 @@ logger.info("user action", user_id=123, action="login")
 ### Basic Usage
 
 ```python
-from fastlog import get_logger
+from rapidlog import get_logger
 
 # Create logger with default settings
 logger = get_logger(level="INFO")
@@ -123,7 +123,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 # After
-from fastlog import get_logger
+from rapidlog import get_logger
 logger = get_logger()
 ```
 
@@ -149,7 +149,7 @@ logger = logging.getLogger()
 logger.addHandler(handler)
 
 # After: One line
-from fastlog import get_logger
+from rapidlog import get_logger
 logger = get_logger()
 ```
 
@@ -325,7 +325,7 @@ Shows memory and throughput characteristics of each preset.
 python benchmark_enhanced.py
 ```
 
-Compares fastlog against:
+Compares rapidlog against:
 - **stdlib logging** (basic, JSON formatter, batching)
 - **python-json-logger** (optional)
 - **structlog** (optional)
