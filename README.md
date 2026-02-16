@@ -285,7 +285,7 @@ Detailed benchmark results from comprehensive comparison (Python 3.13, Windows):
 
 ## Current architecture
 
-The implementation in `fastlog.py` currently follows this shape:
+The implementation in `rapidlog.py` currently follows this shape:
 
 1. **Hot path (`Logger._log`)**
    - Level check first.
@@ -301,7 +301,7 @@ The implementation in `fastlog.py` currently follows this shape:
 
 ## Repository layout
 
-- `fastlog.py` — core logger + queue + writer thread with presets
+- `rapidlog.py` — core logger + queue + writer thread with presets
 - `benchmark_logging.py` — original in-memory benchmark (legacy)
 - `benchmark_persisted_logging.py` — production-style benchmark with logs persisted to files
 - `benchmark_enhanced.py` — comprehensive comparison against stdlib, structlog, loguru, python-json-logger, and fastlogging

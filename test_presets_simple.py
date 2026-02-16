@@ -1,4 +1,4 @@
-from fastlog import get_logger
+from rapidlog import get_logger
 
 # Test low-memory preset
 logger = get_logger(preset="low-memory")

@@ -1,5 +1,5 @@
 """
-Benchmark comparing fastlog against multiple logging libraries with actual file I/O.
+Benchmark comparing rapidlog against multiple logging libraries with actual file I/O.
 Includes stdlib, structlog, loguru, python-json-logger, and fastlogging.
 """
 
@@ -15,7 +15,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Callable
 
-from fastlog import Logger as FastLogger
+from rapidlog import Logger as RapidLogger
 
 
 BENCHMARK_DIR = Path("benchmark_logs")
@@ -92,16 +92,16 @@ def _run_threads(threads: int, worker: Callable[[int], None]) -> None:
         t.join()
 
 
-def benchmark_fastlog(threads: int, logs_per_thread: int) -> Result:
-    """Benchmark fastlog library with file output."""
-    out_file = BENCHMARK_DIR / f"fastlog-{threads}x{logs_per_thread}.jsonl"
+def benchmark_rapidlog(threads: int, logs_per_thread: int) -> Result:
+    """Benchmark rapidlog library with file output."""
+    out_file = BENCHMARK_DIR / f"rapidlog-{threads}x{logs_per_thread}.jsonl"
     _fresh_file(out_file)
     
     real_stdout = sys.stdout
     out_handle = out_file.open("w", encoding="utf-8", buffering=1)
     sys.stdout = out_handle
     
-    logger = FastLogger(
+    logger = RapidLogger(
         level="INFO",
         queue_size=65536,
         batch_size=512,
@@ -128,7 +128,7 @@ def benchmark_fastlog(threads: int, logs_per_thread: int) -> Result:
     total = threads * logs_per_thread
     bytes_written = out_file.stat().st_size
     return Result(
-        "fastlog",
+        "rapidlog",
         threads,
         logs_per_thread,
         total,
@@ -483,7 +483,7 @@ def benchmark_fastlogging(threads: int, logs_per_thread: int) -> Result | None:
 def run_case(threads: int, logs_per_thread: int) -> tuple[list[Result], list[str]]:
     """Run a benchmark case across all loggers."""
     results = [
-        benchmark_fastlog(threads, logs_per_thread),
+        benchmark_rapidlog(threads, logs_per_thread),
         benchmark_stdlib_basic(threads, logs_per_thread),
         benchmark_stdlib_json(threads, logs_per_thread),
         benchmark_stdlib_batching(threads, logs_per_thread),

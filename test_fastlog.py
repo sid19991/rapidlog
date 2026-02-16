@@ -1,5 +1,5 @@
 """
-Comprehensive tests for fastlog, including edge cases and failure scenarios.
+Comprehensive tests for rapidlog, including edge cases and failure scenarios.
 """
 
 import json
@@ -12,7 +12,7 @@ from decimal import Decimal
 from unittest.mock import patch, MagicMock
 
 import pytest
-from fastlog import Logger, RingQueue, _LEVELS
+from rapidlog import Logger, RingQueue, _LEVELS
 
 
 class MockBinaryIO(io.RawIOBase):
