@@ -8,7 +8,7 @@ import tracemalloc
 from dataclasses import dataclass
 from pathlib import Path
 
-from fastlog import Logger as FastLogger
+from rapidlog import Logger as FastLogger
 
 
 @dataclass
@@ -51,7 +51,7 @@ def _fresh_file(path: Path) -> None:
         path.unlink()
 
 
-def benchmark_fastlog_persisted(threads: int, logs_per_thread: int, out_file: Path) -> Result:
+def benchmark_rapidlog_persisted(threads: int, logs_per_thread: int, out_file: Path) -> Result:
     import sys
 
     _fresh_file(out_file)
@@ -80,7 +80,7 @@ def benchmark_fastlog_persisted(threads: int, logs_per_thread: int, out_file: Pa
 
     total = threads * logs_per_thread
     return Result(
-        name="fastlog-persisted",
+        name="rapidlog-persisted",
         threads=threads,
         logs_per_thread=logs_per_thread,
         total_logs=total,
@@ -179,7 +179,7 @@ def benchmark_python_json_logger_persisted(threads: int, logs_per_thread: int, o
 
 def run_case(threads: int, logs_per_thread: int, output_dir: Path) -> tuple[list[Result], list[str]]:
     results = [
-        benchmark_fastlog_persisted(threads, logs_per_thread, output_dir / f"fastlog-{threads}t.log"),
+        benchmark_rapidlog_persisted(threads, logs_per_thread, output_dir / f"rapidlog-{threads}t.log"),
         benchmark_stdlib_persisted(threads, logs_per_thread, output_dir / f"stdlib-{threads}t.log"),
     ]
     notes: list[str] = []

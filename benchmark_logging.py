@@ -8,7 +8,7 @@ import time
 import tracemalloc
 from dataclasses import dataclass
 
-from fastlog import Logger as FastLogger
+from rapidlog import Logger as FastLogger
 
 
 @dataclass
@@ -62,7 +62,7 @@ def _run_threads(threads: int, worker) -> None:
         t.join()
 
 
-def benchmark_fastlog(threads: int, logs_per_thread: int) -> Result:
+def benchmark_rapidlog(threads: int, logs_per_thread: int) -> Result:
     import sys
 
     real_stdout = sys.stdout
@@ -84,7 +84,7 @@ def benchmark_fastlog(threads: int, logs_per_thread: int) -> Result:
     tracemalloc.stop()
 
     total = threads * logs_per_thread
-    return Result("fastlog", threads, logs_per_thread, total, elapsed, total / elapsed, peak / 1024)
+    return Result("rapidlog", threads, logs_per_thread, total, elapsed, total / elapsed, peak / 1024)
 
 
 def benchmark_stdlib_json(threads: int, logs_per_thread: int) -> Result:
@@ -144,7 +144,7 @@ def benchmark_python_json_logger(threads: int, logs_per_thread: int) -> Result |
 
 def run_case(threads: int, logs_per_thread: int) -> tuple[list[Result], list[str]]:
     results = [
-        benchmark_fastlog(threads, logs_per_thread),
+        benchmark_rapidlog(threads, logs_per_thread),
         benchmark_stdlib_json(threads, logs_per_thread),
     ]
     notes: list[str] = []

@@ -10,7 +10,7 @@ readme = "README.md"
 requires-python = ">=3.10"
 license = {text = "MIT"}
 authors = [
-    {name = "fastlog contributors"}
+    {name = "rapidlog contributors"}
 ]
 keywords = ["logging", "json", "performance", "structured-logging", "async"]
 classifiers = [
@@ -29,9 +29,9 @@ classifiers = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/yourusername/fastlog"
-Repository = "https://github.com/yourusername/fastlog"
-Issues = "https://github.com/yourusername/fastlog/issues"
+Homepage = "https://github.com/yourusername/rapidlog"
+Repository = "https://github.com/yourusername/rapidlog"
+Issues = "https://github.com/yourusername/rapidlog/issues"
 
 [project.optional-dependencies]
 dev = [
@@ -46,7 +46,7 @@ benchmark = [
 ]
 
 [tool.setuptools]
-py-modules = ["fastlog"]
+py-modules = ["rapidlog"]
 
 [tool.pytest.ini_options]
 testpaths = ["test_fastlog.py"]
@@ -56,7 +56,7 @@ python_functions = ["test_*"]
 addopts = "-v --tb=short"
 
 [tool.coverage.run]
-source = ["fastlog"]
+source = ["rapidlog"]
 omit = ["test_*", "benchmark_*", "demo_*", "compare_*", "verify_*"]
 
 [tool.coverage.report]
