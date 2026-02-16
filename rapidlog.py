@@ -1,5 +1,5 @@
 """
-fastlog - High-performance JSON logging for Python
+rapidlog - High-performance JSON logging for Python
 
 A logging library optimized for throughput with structured JSON output.
 Designed for multi-threaded applications where logging should not be a bottleneck.
@@ -12,7 +12,7 @@ Key Features:
 - Configurable presets for different use cases
 
 Basic Usage:
-    >>> from fastlog import get_logger
+    >>> from rapidlog import get_logger
     >>> logger = get_logger(level="INFO")
     >>> logger.info("user login", user_id=123, action="login")
     >>> logger.close()
@@ -300,7 +300,7 @@ class Logger:
         self._flush_interval = config["flush_interval"]
         self._local = threading.local()
         self._stop = threading.Event()
-        self._writer = threading.Thread(target=self._writer_loop, name="fastlog-writer", daemon=True)
+        self._writer = threading.Thread(target=self._writer_loop, name="rapidlog-writer", daemon=True)
         self._writer.start()
 
     def is_enabled_for(self, level: str) -> bool:
@@ -438,8 +438,8 @@ class Logger:
                         "level": record[_LEVEL],
                         "msg": record[_MESSAGE],
                         "thread": record[_THREAD_ID],
-                        "fastlog_error": f"{type(exc).__name__}: {exc}",
-                        "fastlog_fields_repr": repr(record[_FIELDS]),
+                        "rapidlog_error": f"{type(exc).__name__}: {exc}",
+                        "rapidlog_fields_repr": repr(record[_FIELDS]),
                     }
                     line = json.dumps(fallback, separators=(",", ":"), ensure_ascii=False)
                 lines.append(line)
