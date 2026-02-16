@@ -35,5 +35,5 @@ jobs:
     - name: Run tests with coverage
       if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.13'
       run: |
-        pytest test_fastlog.py --cov=fastlog --cov-report=term
-        echo "Coverage report generated. Run locally with: pytest test_fastlog.py --cov=fastlog --cov-report=html"
+        pytest test_fastlog.py --cov=rapidlog --cov-report=term
+        echo "Coverage report generated. Run locally with: pytest test_fastlog.py --cov=rapidlog --cov-report=html"
