@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "rapidlog"
-version = "1.0.5"
+version = "1.0.6"
 description = "High-performance JSON logging for Python with zero dependencies"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -29,9 +29,9 @@ classifiers = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/yourusername/rapidlog"
-Repository = "https://github.com/yourusername/rapidlog"
-Issues = "https://github.com/yourusername/rapidlog/issues"
+Homepage = "https://github.com/sid19991/rapidlog"
+Repository = "https://github.com/sid19991/rapidlog"
+Issues = "https://github.com/sid19991/rapidlog/issues"
 
 [project.optional-dependencies]
 dev = [
