@@ -13,6 +13,7 @@ from unittest.mock import patch, MagicMock
 
 import pytest
 from rapidlog import Logger, RingQueue, _LEVELS
+from scripts.set_package_version import normalize_version, update_pyproject_version
 
 
 class MockBinaryIO(io.RawIOBase):
@@ -604,6 +605,43 @@ class TestMessageFormat:
         for line in lines:
             log = json.loads(line)  # Will raise if invalid JSON
             assert isinstance(log, dict)
+
+
+# ============================================================================
+# Package Version Script Tests
+# ============================================================================
+
+class TestPackageVersionScript:
+    """Tests for scripts/set_package_version.py helpers."""
+
+    def test_normalize_version(self):
+        """Supports plain and v-prefixed version strings."""
+        assert normalize_version("1.2.3") == "1.2.3"
+        assert normalize_version("v1.2.3") == "1.2.3"
+        assert normalize_version(" v2.0.0 ") == "2.0.0"
+
+    def test_normalize_version_rejects_invalid(self):
+        """Rejects empty and malformed version strings."""
+        with pytest.raises(ValueError):
+            normalize_version("")
+        with pytest.raises(ValueError):
+            normalize_version("1.2")
+        with pytest.raises(ValueError):
+            normalize_version("version-1.2.3")
+
+    def test_update_pyproject_version(self, tmp_path):
+        """Rewrites the version field in a pyproject file."""
+        pyproject = tmp_path / "pyproject.toml"
+        pyproject.write_text(
+            """[project]\nname = \"rapidlog\"\nversion = \"1.0.0\"\ndescription = \"test\"\n""",
+            encoding="utf-8",
+        )
+
+        update_pyproject_version(pyproject, "1.0.1")
+
+        updated = pyproject.read_text(encoding="utf-8")
+        assert 'version = "1.0.1"' in updated
+        assert 'version = "1.0.0"' not in updated
 
 
 if __name__ == "__main__":
