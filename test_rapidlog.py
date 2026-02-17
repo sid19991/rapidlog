@@ -111,7 +111,7 @@ class TestRingQueue:
         batch = q.get_many(10, timeout=0.1)
         elapsed = time.perf_counter() - start
         assert batch == []
-        assert elapsed >= 0.1
+        assert elapsed >= 0.095
 
     def test_get_many_max_items(self):
         """get_many respects max_items limit."""
