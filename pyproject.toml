@@ -49,7 +49,7 @@ benchmark = [
 py-modules = ["rapidlog"]
 
 [tool.pytest.ini_options]
-testpaths = ["test_fastlog.py"]
+testpaths = ["test_rapidlog.py"]
 python_files = ["test_*.py"]
 python_classes = ["Test*"]
 python_functions = ["test_*"]
