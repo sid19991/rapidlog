@@ -2,8 +2,8 @@
 
 **High-performance JSON logging for Python** — Pure Python, zero dependencies, designed for speed.
 
-[![Tests](https://github.com/sid19991/fastlog/actions/workflows/test.yml/badge.svg)](https://github.com/sid19991/fastlog/actions/workflows/test.yml)
-[![Benchmarks](https://github.com/sid19991/fastlog/actions/workflows/benchmark.yml/badge.svg)](https://github.com/sid19991/fastlog/actions/workflows/benchmark.yml)
+[![Tests](https://github.com/sid19991/rapidlog/actions/workflows/test.yml/badge.svg)](https://github.com/sid19991/rapidlog/actions/workflows/test.yml)
+[![Benchmarks](https://github.com/sid19991/rapidlog/actions/workflows/benchmark.yml/badge.svg)](https://github.com/sid19991/fastlog/actions/workflows/benchmark.yml)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![PyPI](https://img.shields.io/pypi/v/rapidlog.svg)](https://pypi.org/project/rapidlog/)
