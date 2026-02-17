@@ -306,7 +306,7 @@ The implementation in `rapidlog.py` currently follows this shape:
 - `benchmark_persisted_logging.py` — production-style benchmark with logs persisted to files
 - `benchmark_enhanced.py` — comprehensive comparison against stdlib, structlog, loguru, python-json-logger, and fastlogging
 - `demo_presets.py` — demonstration of memory/throughput trade-offs across presets
-- `test_fastlog.py` — comprehensive test suite (37 tests covering edge cases)
+- `test_rapidlog.py` — comprehensive test suite (37 tests covering edge cases)
 - `TEST_COVERAGE.md` — detailed documentation of all test scenarios
 
 ## Running benchmarks
@@ -349,19 +349,19 @@ python benchmark_persisted_logging.py
 ### 1) Full test suite
 
 ```bash
-pytest test_fastlog.py -v
+pytest test_rapidlog.py -v
 ```
 
 ### 2) Quick test
 
 ```bash
-pytest test_fastlog.py -q
+pytest test_rapidlog.py -q
 ```
 
 ### 3) Specific test class
 
 ```bash
-pytest test_fastlog.py::TestRingQueue -v
+pytest test_rapidlog.py::TestRingQueue -v
 ```
 
 ## Project status
